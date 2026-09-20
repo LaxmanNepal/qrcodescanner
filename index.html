@@ -37,7 +37,7 @@ footer{text-align:center;color:var(--muted);padding:40px 18px 55px;font-size:13p
 <hr class="divider">
 <h2>2. Customize</h2>
 <div class="tools">
-<div class="control"><h4>QR style</h4><select id="style"><option value="square">Classic Square</option><option value="dots">Dot Matrix</option><option value="rounded">Rounded</option></select></div>
+<div class="control"><h4>QR style</h4><select id="style"><option value="square">Classic Square</option><option value="dots">Dot Matrix</option><option value="rounded">Rounded</option><option value="high-contrast">High Contrast</option></select></div>
 <div class="control"><h4>Eye style</h4><select id="eye"><option>Square</option><option>Rounded</option><option>Circle</option></select></div>
 <div class="control"><h4>Foreground</h4><div class="colorline"><input type="color" id="fg" value="#111827"><input class="field" id="fgText" value="#111827"></div></div>
 <div class="control"><h4>Background</h4><div class="colorline"><input type="color" id="bg" value="#ffffff"><input class="field" id="bgText" value="#ffffff"></div></div>
@@ -107,7 +107,7 @@ document.querySelectorAll('.type').forEach(b=>b.onclick=()=>setType(b.dataset.ty
 function v(id){return $(id)?.value.trim()||''}
 function content(){
 switch(state.type){
-case'link':return v('f_url');
+case'link':{let x=v('f_url');if(x&&!/^[a-z][a-z0-9+.-]*:\/\//i.test(x))x='https://'+x;return x}
 case'text':return v('f_text');
 case'email':return 'mailto:'+v('f_to')+'?subject='+encodeURIComponent(v('f_subject'))+'&body='+encodeURIComponent(v('f_body'));
 case'phone':return 'tel:'+v('f_phone');
@@ -122,7 +122,7 @@ case'social':return v('f_social')}
 }
 function wifiEsc(s){return s.replace(/([\\;,:])/g,'\\$1')}
 function contrast(a,b){function lum(hex){hex=hex.replace('#','');let c=[parseInt(hex.slice(0,2),16),parseInt(hex.slice(2,4),16),parseInt(hex.slice(4,6),16)].map(x=>{x/=255;return x<=.03928?x/12.92:Math.pow((x+.055)/1.055,2.4)});return .2126*c[0]+.7152*c[1]+.0722*c[2]}let x=lum(a),y=lum(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05)}
-function makeQR(){let text=content();if(!text){alert('Please enter the content first.');return}state.text=text;$('qr').innerHTML='';let size=+$('size').value;state.qr=new QRCode($('qr'),{text,width:size>520?520:size,height:size>520?520:size,colorDark:$('fg').value,colorLight:$('bg').value,correctLevel:{L:QRCode.CorrectLevel.L,M:QRCode.CorrectLevel.M,Q:QRCode.CorrectLevel.Q,H:QRCode.CorrectLevel.H}[$('ec').value]});$('chars').textContent=text.length;$('quality').textContent=$('ec').value;$('contrast').textContent=contrast($('fg').value,$('bg').value).toFixed(1)+':1';$('png').disabled=$('svg').disabled=$('copy').disabled=$('share').disabled=$('print').disabled=false;if(v('frame')){let p=document.createElement('div');p.className='qrframe';p.textContent=v('frame');$('qr').appendChild(p)}}
+function makeQR(){let text=content();if(!text){alert('Please enter the content first.');return}if(text.length>2953){alert('This content is too long for a practical QR code. Please shorten it.');return}state.text=text;$('qr').innerHTML='';let size=+$('size').value;state.qr=new QRCode($('qr'),{text,width:Math.min(size,520),height:Math.min(size,520),colorDark:$('fg').value,colorLight:$('bg').value,correctLevel:{L:QRCode.CorrectLevel.L,M:QRCode.CorrectLevel.M,Q:QRCode.CorrectLevel.Q,H:QRCode.CorrectLevel.H}[$('ec').value]});$('chars').textContent=text.length;$('quality').textContent=$('ec').value;$('contrast').textContent=contrast($('fg').value,$('bg').value).toFixed(1)+':1';$('png').disabled=$('svg').disabled=$('copy').disabled=$('share').disabled=$('print').disabled=false;if(v('frame')){let p=document.createElement('div');p.className='qrframe';p.textContent=v('frame');$('qr').appendChild(p)}}
 $('generate').onclick=makeQR;
 $('size').oninput=()=>{$('sizeVal').textContent=$('size').value;if(state.text)makeQR()};
 ['fg','bg'].forEach(id=>$(id).oninput=()=>{ $(id+'Text').value=$(id).value;if(state.text)makeQR()});
@@ -144,13 +144,13 @@ function renderHistory(){let h=JSON.parse(localStorage.qrHistory||'[]');$('histo
 $('clearHistory').onclick=()=>{if(confirm('Delete all saved QR codes from this device?')){localStorage.removeItem('qrHistory');renderHistory()}};
 
 async function startScanner(){if(typeof Html5Qrcode==='undefined'){alert('Scanner library is still loading. Try again.');return}try{state.scanner=new Html5Qrcode('reader');await state.scanner.start({facingMode:'environment'},{fps:10,qrbox:{width:230,height:230}},t=>showScan(t),()=>{});$('startScan').disabled=true;$('stopScan').disabled=false}catch(e){$('scanResult').className='scanresult show';$('scanResult').textContent='Camera could not start. Allow camera permission and use HTTPS.'}}
-function showScan(t){$('scanResult').className='scanresult show';$('scanResult').innerHTML='<b>Detected</b><br>'+esc(t)+'<div class="btnrow"><button class="btn" onclick="navigator.clipboard.writeText('+JSON.stringify(t)+')">Copy</button><button class="btn primary" onclick="window.open('+JSON.stringify(t)+',\'_blank\')">Open</button></div>'}
+function showScan(t){$('scanResult').className='scanresult show';let safe=/^(https?:|mailto:|tel:|sms:|smsto:|geo:)/i.test(t);$('scanResult').innerHTML='<b>Detected</b><br>'+esc(t)+'<div class="btnrow"><button class="btn" id="scanCopy">Copy</button>'+(safe?'<button class="btn primary" id="scanOpen">Open</button>':'')+'</div>';document.getElementById('scanCopy').onclick=()=>navigator.clipboard.writeText(t);if(safe)document.getElementById('scanOpen').onclick=()=>window.open(t,'_blank','noopener,noreferrer')}
 $('startScan').onclick=startScanner;$('stopScan').onclick=async()=>{if(state.scanner){try{await state.scanner.stop();state.scanner.clear()}catch(e){}state.scanner=null}$('startScan').disabled=false;$('stopScan').disabled=true};
 $('scanFile').onchange=e=>scanFile(e.target.files[0]);
 async function scanFile(file){if(!file||typeof Html5Qrcode==='undefined')return;let x=new Html5Qrcode('reader');try{let t=await x.scanFile(file,true);showScan(t)}catch(e){$('scanResult').className='scanresult show';$('scanResult').textContent='No readable QR code found in that image.'}}
 $('drop').ondragover=e=>{e.preventDefault();$('drop').classList.add('drag')};$('drop').ondragleave=()=>$('drop').classList.remove('drag');$('drop').ondrop=e=>{e.preventDefault();$('drop').classList.remove('drag');scanFile(e.dataTransfer.files[0])};
 
-function csvRows(s){return s.split(/\r?\n/).map(x=>x.trim()).filter(Boolean).map((line,i)=>{let p=line.split(',');return {name:p[0]||'QR '+(i+1),value:p.slice(1).join(',')}}).filter(x=>x.value)}
+function csvRows(s){return s.split(/\r?\n/).map(x=>x.trim()).filter(Boolean).map((line,i)=>{let p=line.split(',');if(i===0&&/^name\s*,/i.test(line))return null;return {name:p[0]||'QR '+(i+1),value:p.slice(1).join(',')}}).filter(Boolean).filter(x=>x.value)}
 $('bulkPreview').onclick=()=>{$('bulkOutput').innerHTML=csvRows($('csv').value).slice(0,100).map((x,i)=>(i+1)+'. <b>'+esc(x.name)+'</b> — '+esc(x.value)).join('<br>')||'No rows found.'};
 $('bulkGenerate').onclick=async()=>{let rows=csvRows($('csv').value);if(!rows.length){alert('Add CSV rows first.');return}if(typeof JSZip==='undefined'){alert('ZIP library is still loading. Try again.');return}let zip=new JSZip();for(let i=0;i<rows.length;i++){let holder=document.createElement('div');document.body.appendChild(holder);new QRCode(holder,{text:rows[i].value,width:600,height:600,correctLevel:QRCode.CorrectLevel.M});let c=holder.querySelector('canvas');let b=await new Promise(r=>c.toBlob(r,'image/png'));zip.file((rows[i].name||('qr-'+(i+1))).replace(/[^a-z0-9_-]+/gi,'_')+'.png',b);holder.remove()}let blob=await zip.generateAsync({type:'blob'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='qr-studio-bulk.zip';a.click();$('bulkOutput').textContent='Generated '+rows.length+' QR codes.'};
 
