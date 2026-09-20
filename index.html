@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Free QR Code Generator and QR Scanner by Laxman Nepal. Generate QR codes for links, text, email, phone, Wi-Fi and contact cards directly in your browser.">
+<meta name="theme-color" content="#ffffff">
+<title>QR Code Generator & Scanner | Laxman Nepal</title>
+<link rel="icon" href="images/favicon.ico" onerror="this.remove()">
+<style>
+:root{--bg:#f5f7fb;--card:#fff;--text:#172033;--muted:#687386;--line:#e5e9f0;--accent:#2563eb;--accent2:#1d4ed8;--danger:#dc2626;--shadow:0 14px 45px rgba(20,35,70,.09)}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#fff 0,#f5f7fb 42%,#eef2f8 100%);color:var(--text);font:15px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh}
+header{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.88);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
+.nav{max-width:1120px;margin:auto;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px}.brand{font-weight:800;font-size:19px}.brand span{color:var(--accent)}
+main{max-width:1120px;margin:34px auto;padding:0 20px}.hero{text-align:center;margin-bottom:24px}.hero h1{font-size:clamp(30px,5vw,48px);line-height:1.08;margin:0 0 10px}.hero p{color:var(--muted);margin:0 auto;max-width:680px}
+.grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(300px,.85fr);gap:20px}.card{background:var(--card);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:22px}
+.tabs{display:flex;gap:8px;overflow:auto;padding-bottom:4px;margin-bottom:18px}.tab{border:1px solid var(--line);background:#fff;border-radius:999px;padding:9px 14px;white-space:nowrap;cursor:pointer}.tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+label{display:block;font-weight:650;margin:12px 0 7px}.field,textarea,select{width:100%;border:1px solid #d8dee8;border-radius:12px;padding:12px 13px;font:inherit;background:#fff;outline:none}.field:focus,textarea:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,.12)}textarea{min-height:130px;resize:vertical}
+.btnrow{display:flex;flex-wrap:wrap;gap:9px;margin-top:15px}.btn{border:0;border-radius:12px;padding:11px 16px;font:650 14px inherit;cursor:pointer;background:#edf2f8;color:var(--text)}.btn.primary{background:var(--accent);color:#fff}.btn.primary:hover{background:var(--accent2)}.btn:disabled{opacity:.45;cursor:not-allowed}
+.panel{display:none}.panel.active{display:block}.qrbox{min-height:300px;display:grid;place-items:center;border:1px dashed #d7deea;border-radius:18px;background:#fbfcfe;padding:20px}.qrbox canvas,.qrbox img{max-width:100%;height:auto}.hint{color:var(--muted);font-size:13px;margin-top:10px}
+.scan{display:grid;gap:12px}.reader{min-height:280px;border-radius:18px;overflow:hidden;background:#101828}.result{display:none;padding:14px;border-radius:14px;background:#f1f5f9;word-break:break-word}.result.show{display:block}.status{color:var(--muted);font-size:13px}
+footer{text-align:center;color:var(--muted);padding:30px 20px 45px;font-size:13px}
+@media(max-width:800px){.grid{grid-template-columns:1fr}.card{padding:17px}.nav{padding:12px 15px}main{margin-top:22px;padding:0 14px}.qrbox{min-height:250px}}
+</style>
+</head>
+<body>
+<header><div class="nav"><div class="brand">QR <span>Generator</span> & Scanner</div><a href="https://laxmannepal.com.np/" target="_blank" rel="noopener" style="text-decoration:none;color:#2563eb;font-weight:650">Laxman Nepal</a></div></header>
+<main>
+<section class="hero"><h1>Create & Scan QR Codes</h1><p>Runs entirely in your browser. No PHP server, database, uploads, or generated files are required.</p></section>
+<div class="grid">
+<section class="card">
+<div class="tabs" role="tablist">
+<button class="tab active" data-tab="link">Link</button><button class="tab" data-tab="text">Text</button><button class="tab" data-tab="email">Email</button><button class="tab" data-tab="phone">Phone</button><button class="tab" data-tab="sms">SMS</button><button class="tab" data-tab="wifi">Wi-Fi</button><button class="tab" data-tab="vcard">Contact</button>
+</div>
+<div id="link" class="panel active"><label for="linkInput">Website URL</label><input id="linkInput" class="field" type="url" placeholder="https://example.com" autocomplete="url"></div>
+<div id="text" class="panel"><label for="textInput">Text</label><textarea id="textInput" placeholder="Type anything..."></textarea></div>
+<div id="email" class="panel"><label for="emailTo">Email address</label><input id="emailTo" class="field" type="email" placeholder="you@example.com"><label for="emailSubject">Subject</label><input id="emailSubject" class="field" placeholder="Hello"><label for="emailBody">Message</label><textarea id="emailBody" placeholder="Your message"></textarea></div>
+<div id="phone" class="panel"><label for="phoneInput">Phone number</label><input id="phoneInput" class="field" type="tel" placeholder="+977 98XXXXXXXX"></div>
+<div id="sms" class="panel"><label for="smsTo">Phone number</label><input id="smsTo" class="field" type="tel" placeholder="+977 98XXXXXXXX"><label for="smsBody">Message</label><textarea id="smsBody" placeholder="Your SMS"></textarea></div>
+<div id="wifi" class="panel"><label for="wifiSsid">Network name (SSID)</label><input id="wifiSsid" class="field" placeholder="My Wi-Fi"><label for="wifiPass">Password</label><input id="wifiPass" class="field" type="text" placeholder="Password"><label for="wifiType">Security</label><select id="wifiType"><option value="WPA">WPA/WPA2</option><option value="WEP">WEP</option><option value="nopass">No password</option></select></div>
+<div id="vcard" class="panel"><label for="vcName">Name</label><input id="vcName" class="field" placeholder="Laxman Nepal"><label for="vcPhone">Phone</label><input id="vcPhone" class="field" placeholder="+977 98XXXXXXXX"><label for="vcEmail">Email</label><input id="vcEmail" class="field" type="email" placeholder="you@example.com"><label for="vcOrg">Organization</label><input id="vcOrg" class="field" placeholder="Company"></div>
+<div class="btnrow"><button class="btn primary" id="generate">Generate QR</button><button class="btn" id="clear">Clear</button></div>
+<p class="hint">Tip: generated QR codes are created locally and are not sent to a server.</p>
+</section>
+<section class="card">
+<h2 style="margin-top:0">QR Preview</h2>
+<div id="qr" class="qrbox"><span class="status">Enter content and tap Generate QR.</span></div>
+<div class="btnrow"><button class="btn primary" id="download" disabled>Download PNG</button><button class="btn" id="copy" disabled>Copy content</button></div>
+<hr style="border:0;border-top:1px solid var(--line);margin:24px 0">
+<h2>Scan a QR Code</h2>
+<div class="scan"><div id="reader" class="reader"></div><div id="scanResult" class="result"></div><div id="scanStatus" class="status">Camera access requires HTTPS and your permission.</div><button class="btn" id="startScan">Start camera</button><button class="btn" id="stopScan" disabled>Stop camera</button></div>
+</section>
+</div>
+</main>
+<footer>© 2026 Laxman Nepal · GitHub Pages compatible</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://unpkg.com/html5-qrcode" defer></script>
+<script>
+const $=id=>document.getElementById(id);let currentText="",qrInstance=null,scanner=null;
+document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".panel").forEach(x=>x.classList.remove("active"));b.classList.add("active");$(b.dataset.tab).classList.add("active")}));
+function val(id){return $(id).value.trim()}
+function esc(s){return s.replace(/\\/g,"\\\\").replace(/;/g,"\\;").replace(/,/g,"\\,").replace(/:/g,"\\:")}
+function content(){
+ const tab=document.querySelector(".tab.active").dataset.tab;
+ if(tab==="link") return val("linkInput");
+ if(tab==="text") return val("textInput");
+ if(tab==="email") return "mailto:"+val("emailTo")+"?subject="+encodeURIComponent(val("emailSubject"))+"&body="+encodeURIComponent(val("emailBody"));
+ if(tab==="phone") return "tel:"+val("phoneInput");
+ if(tab==="sms") return "SMSTO:"+val("smsTo")+":"+val("smsBody");
+ if(tab==="wifi") return "WIFI:T:"+val("wifiType")+";S:"+esc(val("wifiSsid"))+";P:"+esc(val("wifiPass"))+";;";
+ if(tab==="vcard") return "BEGIN:VCARD\nVERSION:3.0\nFN:"+esc(val("vcName"))+"\nTEL:"+esc(val("vcPhone"))+"\nEMAIL:"+esc(val("vcEmail"))+"\nORG:"+esc(val("vcOrg"))+"\nEND:VCARD";
+ return "";
+}
+$("generate").onclick=()=>{currentText=content();if(!currentText){alert("Please enter some content.");return}$("qr").innerHTML="";qrInstance=new QRCode($("qr"),{text:currentText,width:280,height:280,colorDark:"#111827",colorLight:"#ffffff",correctLevel:QRCode.CorrectLevel.M});$("download").disabled=false;$("copy").disabled=false};
+$("clear").onclick=()=>{document.querySelectorAll("input,textarea").forEach(x=>x.value="");$("qr").innerHTML='<span class="status">Enter content and tap Generate QR.</span>';$("download").disabled=true;$("copy").disabled=true;currentText=""};
+$("copy").onclick=async()=>{if(currentText)try{await navigator.clipboard.writeText(currentText);$("copy").textContent="Copied!";setTimeout(()=>$("copy").textContent="Copy content",1200)}catch(e){alert("Clipboard permission was denied.")}};
+$("download").onclick=()=>{const canvas=$("qr").querySelector("canvas");if(!canvas)return;const a=document.createElement("a");a.download="qrcode.png";a.href=canvas.toDataURL("image/png");a.click()};
+$("startScan").onclick=async()=>{if(typeof Html5Qrcode==="undefined"){alert("Scanner library is still loading. Try again.");return}try{scanner=new Html5Qrcode("reader");await scanner.start({facingMode:"environment"},{fps:10,qrbox:{width:220,height:220}},text=>{const r=$("scanResult");r.textContent=text;r.classList.add("show");$("scanStatus").textContent="QR code detected.";},()=>{});$("startScan").disabled=true;$("stopScan").disabled=false;$("scanStatus").textContent="Camera is running."}catch(e){$("scanStatus").textContent="Unable to start camera. Allow camera access and use HTTPS."}};
+$("stopScan").onclick=async()=>{if(scanner){try{await scanner.stop()}catch(e){}try{scanner.clear()}catch(e){}}scanner=null;$("startScan").disabled=false;$("stopScan").disabled=true;$("scanStatus").textContent="Camera stopped."};
+</script>
+</body>
+</html>
