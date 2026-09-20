@@ -657,7 +657,7 @@ if (!class_exists('QRcdrFn', false)) {
             $relative = $this->relativePath();
             $lang = $this->getLang();
 
-            echo '<script  type="text/javascript" src="js/popper.min.js"></script>';
+            echo '<script  type="text/javascript" src="'.$relative.'js/popper.min.js"></script>';
             // moment.js for event calendar
             if ($this->getConfig('event') == true) {
                 echo '<script src="'.$relative.'js/tempusdominus/js/tempus-dominus.min.js"></script>';
