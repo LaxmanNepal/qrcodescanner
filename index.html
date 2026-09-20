@@ -21,9 +21,14 @@ label{display:block;font-weight:750;margin:12px 0 7px}.field,textarea,select{wid
 footer{text-align:center;color:var(--muted);padding:40px 18px 55px;font-size:13px}
 @media(max-width:900px){.workspace{grid-template-columns:1fr}.preview{position:static}.typegrid{grid-template-columns:repeat(4,1fr)}.templategrid{grid-template-columns:repeat(2,1fr)}}@media(max-width:600px){.navlinks{display:none}.nav{justify-content:space-between}.typegrid{grid-template-columns:repeat(3,1fr)}.tools,.two{grid-template-columns:1fr}.card{padding:15px}.qrstage{min-height:285px}.stats{grid-template-columns:repeat(3,1fr)}main{padding:0 12px;margin-top:18px}}
 </style>
-</head>
+<meta name="color-scheme" content="light dark">
+<style>
+.dark body{background:#090d16;color:#f8fafc}.dark .top{background:rgba(15,23,42,.86)}.dark .card,.dark .template,.dark .historyitem,.dark .modalbox,.dark .field,.dark textarea,.dark select{background:#111827;color:#f8fafc;border-color:#263244}.dark .surface2,.dark .control,.dark .stat,.dark .drop,.dark .scanresult{background:#172033;border-color:#263244}.dark .muted{color:#98a2b3}.dark .type{background:#111827;color:#f8fafc;border-color:#263244}.dark .type.active{background:#29265e}.dark .qrstage{background:#0f172a;border-color:#334155}
+.mobilemenu{display:none;border:0;background:#edf1f7;border-radius:10px;padding:9px 11px;font-weight:900}.dark .mobilemenu{background:#1e293b;color:#fff}
+@media(max-width:600px){.mobilemenu{display:block}.navlinks.open{display:grid;position:absolute;left:12px;right:12px;top:62px;background:rgba(255,255,255,.97);padding:8px;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}.dark .navlinks.open{background:#111827}.navlinks.open button{text-align:left}}
+</style></head>
 <body>
-<header class="top"><nav class="nav"><div class="brand">QR <b>Studio</b></div><div class="navlinks"><button data-page="studio" class="active">Studio</button><button data-page="templates">Templates</button><button data-page="scanner">Scanner</button><button data-page="history">History</button><button data-page="bulk">Bulk</button><button data-page="tools">Tools</button></div><button class="btn" id="installBtn">Install</button></nav></header>
+<header class="top"><nav class="nav"><div class="brand">QR <b>Studio</b></div><button class="mobilemenu" id="mobileMenu">☰</button><div class="navlinks"><button data-page="studio" class="active">Studio</button><button data-page="templates">Templates</button><button data-page="scanner">Scanner</button><button data-page="history">History</button><button data-page="bulk">Bulk</button><button data-page="tools">Tools</button></div><button class="btn" id="themeBtn" title="Toggle theme">◐</button><button class="btn" id="installBtn">Install</button></nav></header>
 <main>
 <section id="page-studio" class="page active">
 <div class="hero"><span class="eyebrow">⚡ Private · Browser-based · GitHub Pages ready</span><h1>Design QR codes people want to scan.</h1><p>Create, customize, test, save and export QR codes without uploading your content.</p></div>
@@ -56,7 +61,7 @@ footer{text-align:center;color:var(--muted);padding:40px 18px 55px;font-size:13p
 <div class="previewhead"><h2 style="margin:0">Live Preview</h2><span class="muted" id="typeLabel">Website</span></div>
 <div class="qrstage"><div class="qrpaper" id="qr"><span class="muted">Choose a type and enter content.</span></div></div>
 <div class="stats"><div class="stat"><b id="chars">0</b><span>characters</span></div><div class="stat"><b id="quality">—</b><span>correction</span></div><div class="stat"><b id="contrast">—</b><span>contrast</span></div></div>
-<div class="btnrow"><button class="btn primary" id="png" disabled>PNG</button><button class="btn" id="svg" disabled>SVG</button><button class="btn" id="copy" disabled>Copy</button><button class="btn" id="share" disabled>Share</button><button class="btn" id="print" disabled>Print</button></div>
+<div class="btnrow"><button class="btn primary" id="png" disabled>PNG</button><button class="btn" id="svg" disabled>SVG</button><button class="btn" id="webp" disabled>WebP</button><button class="btn" id="copy" disabled>Copy</button><button class="btn" id="share" disabled>Share</button><button class="btn" id="print" disabled>Print</button></div>
 <p class="muted">Design data stays in this browser. Styling, gradients, transparent backgrounds and logos are rendered locally.</p>
 </section>
 </div>
@@ -71,13 +76,13 @@ footer{text-align:center;color:var(--muted);padding:40px 18px 55px;font-size:13p
 
 <section id="page-bulk" class="page"><div class="card"><h2>Bulk QR Generator</h2><p class="muted">Paste CSV data with one QR per row. Example: <code>name,url</code>.</p><textarea id="csv" placeholder="name,url
 Laxman Nepal,https://laxmannepal.com.np
-YouTube,https://youtube.com/"></textarea><div class="btnrow"><button class="btn primary" id="bulkGenerate">Generate ZIP</button><button class="btn" id="bulkPreview">Preview rows</button></div><div id="bulkOutput" class="muted" style="margin-top:14px"></div></div></section>
+YouTube,https://youtube.com/"></textarea><label>Bulk template</label><select id="bulkTemplate"><option value="plain">Use current design</option><option value="minimal">Minimal</option><option value="social">Social card</option><option value="business">Business</option></select><div class="btnrow"><button class="btn primary" id="bulkGenerate">Generate ZIP</button><button class="btn" id="bulkPreview">Preview rows</button><button class="btn" id="bulkSample">Load sample CSV</button></div><div id="bulkOutput" class="muted" style="margin-top:14px"></div></div></section>
 
 <section id="page-tools" class="page"><div class="card"><h2>QR Tools</h2><div class="templategrid">
 <button class="template" id="validator"><span class="emoji">🧪</span><b>QR Validator</b><span>Inspect the content and design basics.</span></button>
 <button class="template" id="contrastTool"><span class="emoji">◐</span><b>Contrast Checker</b><span>Check foreground/background contrast.</span></button>
 <button class="template" id="offline"><span class="emoji">📴</span><b>Offline Mode</b><span>Install the PWA for repeat use.</span></button>
-<button class="template" id="about"><span class="emoji">🔒</span><b>Privacy</b><span>Understand what stays on-device.</span></button>
+<button class="template" id="about"><span class="emoji">🔒</span><b>Privacy</b><span>Understand what stays on-device.</span></button><button class="template" id="exportSettings"><span class="emoji">⚙️</span><b>Export settings</b><span>Save or restore your QR design.</span></button>
 </div></div></section>
 </section>
 </main>
@@ -88,6 +93,7 @@ YouTube,https://youtube.com/"></textarea><div class="btnrow"><button class="btn 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="https://unpkg.com/html5-qrcode" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
 <script>
 const $=id=>document.getElementById(id);
 const esc=s=>String(s||'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
@@ -155,5 +161,24 @@ let paper=document.createElement('div');paper.className='qrpaper';mock.appendChi
 if(v('frame') && $('frameStyle').value!=='none'){let p=document.createElement('div');p.textContent=v('frame');p.className='frame-'+$('frameStyle').value;paper.appendChild(p)}
 $('chars').textContent=text.length;$('quality').textContent=$('ec').value;
 $('contrast').textContent=contrast($('fg').value,transparent?'#ffffff':$('bg').value).toFixed(1)+':1';
-$('png').disabled=$('svg').disabled=$('copy').disabled=$('share').disabled=$('print').disabled=false;
-}>
+$('png').disabled=$('svg').disabled=$('webp').disabled=$('copy').disabled=$('share').disabled=$('print').disabled=false;
+}function parseCSV(s){
+let rows=[],row=[],cell='',quoted=false;
+for(let i=0;i<s.length;i++){let c=s[i],n=s[i+1];
+if(c==='"'){if(quoted&&n==='"'){cell+='"';i++}else quoted=!quoted}
+else if(c===','&&!quoted){row.push(cell.trim());cell=''}
+else if((c==='\\n'||c==='\\r')&&!quoted){if(c==='\\r'&&n==='\\n')i++;row.push(cell.trim());if(row.some(Boolean))rows.push(row);row=[];cell=''}
+else cell+=c}
+row.push(cell.trim());if(row.some(Boolean))rows.push(row);return rows}
+function csvRows(s){
+let rows=parseCSV(s);if(rows.length&&/^name$/i.test(rows[0][0]))rows.shift();
+return rows.map((p,i)=>({name:p[0]||'QR '+(i+1),value:p.slice(1).join(',').trim()})).filter(x=>x.value)
+}
+async function styledBlob(value,design,extension='png'){
+return new Promise(async(resolve,reject)=>{
+let holder=document.createElement('div');holder.style.position='fixed';holder.style.left='-99999px';document.body.appendChild(holder);
+let q=new QRCodeStyling({width:800,height:800,type:'canvas',data:value,margin:24,qrOptions:{errorCorrectionLevel:design.ec||'M'},dotsOptions:design.dotsOptions,backgroundOptions:{color:design.bg||'#fff'},cornersSquareOptions:design.cornersSquareOptions,cornersDotOptions:design.cornersDotOptions,image:design.logo||undefined,imageOptions:design.logo?{hideBackgroundDots:true,imageSize:+design.logoSize||.28,margin:8}:undefined});
+q.append(holder);
+setTimeout(async()=>{try{let blob=await q.getRawData(extension);holder.remove();resolve(blob)}catch(e){holder.remove();reject(e)}},80)
+})}
+>
