@@ -36,13 +36,9 @@ require __DIR__ . '/' . $relative . 'include/head.php';
 $custom_page = false;
 $body_class = '';
 
-/*
- * Only load template pages that actually exist inside the template directory.
- * This prevents path traversal through ?p=...
- */
 $page = filter_input(INPUT_GET, 'p', FILTER_UNSAFE_RAW);
 if (is_string($page) && preg_match('/^[a-zA-Z0-9_-]+$/', $page)) {
-    $template_dir = __DIR__ . '/' . $relative . 'template/';
+    $template_dir = __DIR__ . '/' . $relative . 'Template/';
     $load_page = $template_dir . $page . '.html';
     if (is_file($load_page)) {
         $custom_page = file_get_contents($load_page);
@@ -76,9 +72,10 @@ qrcdr()->setMainColor(qrcdr()->getConfig('color_primary'));
 </head>
 <body class="<?php echo htmlspecialchars($body_class, ENT_QUOTES, 'UTF-8'); ?>">
 <?php
-$navbar = __DIR__ . '/' . $relative . 'template/navbar.php';
-$header = __DIR__ . '/' . $relative . 'template/header.php';
-$footer = __DIR__ . '/' . $relative . 'template/footer.php';
+$template_dir = __DIR__ . '/' . $relative . 'Template/';
+$navbar = $template_dir . 'navbar.php';
+$header = $template_dir . 'header.php';
+$footer = $template_dir . 'footer.php';
 
 if (is_file($navbar)) {
     include $navbar;
